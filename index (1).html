@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My MIS Data</title>
+<style>
+:root{--navy:#0b2d5c;--blue:#1769aa;--sky:#eaf4ff;--ink:#18324d;--muted:#657b91;--white:#fff}
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,Helvetica,sans-serif;background:linear-gradient(135deg,#eaf4ff,#f7fbff);color:var(--ink)}
+header{background:linear-gradient(110deg,#082b59,#1769aa);color:#fff;padding:28px 20px}
+.header-inner{max-width:1150px;margin:auto;display:flex;align-items:center;gap:15px}
+.logo{width:52px;height:52px;border-radius:14px;background:#ffffff20;display:grid;place-items:center;font-size:26px}
+h1{margin:0;font-size:30px}header p{margin:7px 0 0;color:#d9ebff}
+main{max-width:1150px;margin:25px auto;padding:0 16px 35px}
+.notice{background:#fff8e6;border:1px solid #f0d48b;color:#74530b;border-radius:12px;padding:13px 15px;line-height:1.5;margin-bottom:18px}
+.panel{background:#fff;border:1px solid #d7e7f7;border-radius:16px;padding:20px;box-shadow:0 8px 24px #163c6410;margin-bottom:20px}
+.panel h2{font-size:19px;margin:0 0 7px;color:var(--navy)}
+.sub{color:var(--muted);font-size:13px;margin:0 0 16px;line-height:1.5}
+.uploads{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px}
+.upload-box{border:2px dashed #a8c9eb;background:#f8fbff;border-radius:12px;padding:17px}
+.upload-box label{font-weight:bold;display:block;margin-bottom:10px}
+input[type=file]{width:100%;font-size:13px}
+.file-name{font-size:12px;color:#54708c;margin-top:9px;overflow-wrap:anywhere}
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:17px}
+button{border:0;border-radius:9px;padding:12px 18px;font-weight:bold;cursor:pointer}
+.primary{background:#1769aa;color:#fff}.secondary{background:#e8f2fc;color:#124c80}
+button:hover{filter:brightness(.97)}
+.cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-bottom:20px}
+.metric{background:#fff;border-radius:14px;padding:18px;border:1px solid #d7e7f7;box-shadow:0 6px 18px #163c640b}
+.metric .label{font-size:13px;color:var(--muted)}.metric .value{font-size:27px;font-weight:bold;color:var(--navy);margin-top:8px}
+.status{padding:12px;border-radius:9px;background:#edf7ff;color:#14558b;margin-top:14px;font-size:14px;line-height:1.5}
+.table-wrap{overflow:auto;max-height:420px;border:1px solid #e1eaf4;border-radius:10px}
+table{border-collapse:collapse;width:100%;font-size:13px;white-space:nowrap}
+th{background:#dceeff;color:#103c6a;position:sticky;top:0}
+th,td{padding:10px 12px;border-bottom:1px solid #e5edf5;text-align:left}
+tr:nth-child(even) td{background:#f8fbff}
+footer{text-align:center;color:#6a829a;padding:10px 15px 25px;font-size:12px}
+@media(max-width:650px){.uploads,.cards{grid-template-columns:1fr}h1{font-size:25px}.panel{padding:15px}}
+</style>
+</head>
+<body>
+<header><div class="header-inner"><div class="logo">📊</div><div><h1>My MIS Data</h1><p>Your simple data dashboard</p></div></div></header>
+<main>
+<div class="notice"><strong>Important:</strong> This starter dashboard processes selected files in this browser only. Uploading a file here does not share it with other website visitors. Do not upload confidential customer or employee data to a public website.</div>
+<section class="panel">
+<h2>Upload your data</h2>
+<p class="sub">Select Excel (.xlsx, .xls) or CSV files, then click Generate Preview. This starter version shows a preview of each file; custom MIS calculations can be added once your columns and reports are confirmed.</p>
+<div class="uploads">
+<div class="upload-box"><label for="file1">Data File 1</label><input id="file1" type="file" accept=".xlsx,.xls,.csv"><div class="file-name" id="name1">No file selected</div></div>
+<div class="upload-box"><label for="file2">Data File 2 (optional)</label><input id="file2" type="file" accept=".xlsx,.xls,.csv"><div class="file-name" id="name2">No file selected</div></div>
+</div>
+<div class="actions"><button class="primary" id="generate">Generate Preview</button><button class="secondary" id="clear">Clear Files</button></div>
+<div id="status" class="status" role="status">Choose a file to begin.</div>
+</section>
+<div class="cards">
+<div class="metric"><div class="label">Files selected</div><div class="value" id="metricFiles">0</div></div>
+<div class="metric"><div class="label">Rows in previewed data</div><div class="value" id="metricRows">0</div></div>
+<div class="metric"><div class="label">Columns in first file</div><div class="value" id="metricCols">0</div></div>
+</div>
+<section class="panel"><h2>Data Preview</h2><p class="sub">The first 100 rows of the selected file will appear below.</p><div id="preview" class="table-wrap"><p style="padding:15px;color:#657b91">No data to display yet.</p></div></section>
+</main>
+<footer>My MIS Data · Free starter website</footer>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<script>
+const file1=document.getElementById('file1'),file2=document.getElementById('file2');
+function setName(input,el){document.getElementById(el).textContent=input.files.length?input.files[0].name:'No file selected'}
+file1.addEventListener('change',()=>setName(file1,'name1'));
+file2.addEventListener('change',()=>setName(file2,'name2'));
+function readFile(file){
+ return new Promise((resolve,reject)=>{
+  const reader=new FileReader();
+  reader.onload=e=>{
+   try{
+    if(!window.XLSX) throw new Error('Excel reader library could not load. Please connect to the internet and refresh this page.');
+    const data=new Uint8Array(e.target.result);
+    const workbook=XLSX.read(data,{type:'array',cellDates:true});
+    const sheet=workbook.Sheets[workbook.SheetNames[0]];
+    resolve(XLSX.utils.sheet_to_json(sheet,{header:1,defval:''}));
+   }catch(err){reject(err)}
+  };
+  reader.onerror=()=>reject(new Error('Could not read this file.'));
+  reader.readAsArrayBuffer(file);
+ });
+}
+function esc(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+document.getElementById('generate').addEventListener('click',async()=>{
+ const files=[file1.files[0],file2.files[0]].filter(Boolean);
+ const status=document.getElementById('status');
+ if(!files.length){status.textContent='Please select at least one Excel or CSV file first.';return}
+ status.textContent='Reading selected file(s)…';
+ try{
+  const parsed=[];
+  for(const file of files){const rows=await readFile(file);parsed.push({file,rows})}
+  const first=parsed[0].rows;
+  document.getElementById('metricFiles').textContent=files.length;
+  document.getElementById('metricRows').textContent=parsed.reduce((sum,x)=>sum+Math.max(0,x.rows.length-1),0).toLocaleString('en-IN');
+  document.getElementById('metricCols').textContent=(first[0]||[]).length;
+  if(!first.length){document.getElementById('preview').innerHTML='<p style="padding:15px">The selected file is empty.</p>';return}
+  let html='<table><thead><tr>'+first[0].map((v,i)=>'<th>'+esc(v||('Column '+(i+1)))+'</th>').join('')+'</tr></thead><tbody>';
+  first.slice(1,101).forEach(row=>{html+='<tr>';for(let i=0;i<first[0].length;i++)html+='<td>'+esc(row[i]??'')+'</td>';html+='</tr>'});
+  html+='</tbody></table>';
+  document.getElementById('preview').innerHTML=html;
+  status.textContent='Preview ready. File(s) were processed in this browser. This starter page does not save or publish uploaded data for other visitors.';
+ }catch(err){status.textContent='Error: '+err.message}
+});
+document.getElementById('clear').addEventListener('click',()=>{
+ file1.value='';file2.value='';setName(file1,'name1');setName(file2,'name2');
+ document.getElementById('metricFiles').textContent='0';document.getElementById('metricRows').textContent='0';document.getElementById('metricCols').textContent='0';
+ document.getElementById('preview').innerHTML='<p style="padding:15px;color:#657b91">No data to display yet.</p>';
+ document.getElementById('status').textContent='Files cleared. Choose a file to begin.';
+});
+</script>
+</body>
+</html>
