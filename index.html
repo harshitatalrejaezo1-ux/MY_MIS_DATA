@@ -1,115 +1,134 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>My MIS Data</title>
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Sales to Onboarding</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
-:root{--navy:#0b2d5c;--blue:#1769aa;--sky:#eaf4ff;--ink:#18324d;--muted:#657b91;--white:#fff}
+:root{--bg:#f6f7f9;--card:#fff;--tx:#1b1f24;--mu:#5d6773;--bd:#dde1e6;--ac:#2457d6;--acx:#fff;--ok:#157347;--er:#b42318;--hd:#eef1f5;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#15181c;--card:#1e2328;--tx:#e8ebee;--mu:#9aa5b1;--bd:#333b44;--ac:#6b93f5;--acx:#0d1117;--ok:#4cc38a;--er:#f08a80;--hd:#262c33;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#15181c;--card:#1e2328;--tx:#e8ebee;--mu:#9aa5b1;--bd:#333b44;--ac:#6b93f5;--acx:#0d1117;--ok:#4cc38a;--er:#f08a80;--hd:#262c33;color-scheme:dark}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
 *{box-sizing:border-box}
-body{margin:0;font-family:Arial,Helvetica,sans-serif;background:linear-gradient(135deg,#eaf4ff,#f7fbff);color:var(--ink)}
-header{background:linear-gradient(110deg,#082b59,#1769aa);color:#fff;padding:28px 20px}
-.header-inner{max-width:1150px;margin:auto;display:flex;align-items:center;gap:15px}
-.logo{width:52px;height:52px;border-radius:14px;background:#ffffff20;display:grid;place-items:center;font-size:26px}
-h1{margin:0;font-size:30px}header p{margin:7px 0 0;color:#d9ebff}
-main{max-width:1150px;margin:25px auto;padding:0 16px 35px}
-.notice{background:#fff8e6;border:1px solid #f0d48b;color:#74530b;border-radius:12px;padding:13px 15px;line-height:1.5;margin-bottom:18px}
-.panel{background:#fff;border:1px solid #d7e7f7;border-radius:16px;padding:20px;box-shadow:0 8px 24px #163c6410;margin-bottom:20px}
-.panel h2{font-size:19px;margin:0 0 7px;color:var(--navy)}
-.sub{color:var(--muted);font-size:13px;margin:0 0 16px;line-height:1.5}
-.uploads{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px}
-.upload-box{border:2px dashed #a8c9eb;background:#f8fbff;border-radius:12px;padding:17px}
-.upload-box label{font-weight:bold;display:block;margin-bottom:10px}
-input[type=file]{width:100%;font-size:13px}
-.file-name{font-size:12px;color:#54708c;margin-top:9px;overflow-wrap:anywhere}
-.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:17px}
-button{border:0;border-radius:9px;padding:12px 18px;font-weight:bold;cursor:pointer}
-.primary{background:#1769aa;color:#fff}.secondary{background:#e8f2fc;color:#124c80}
-button:hover{filter:brightness(.97)}
-.cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-bottom:20px}
-.metric{background:#fff;border-radius:14px;padding:18px;border:1px solid #d7e7f7;box-shadow:0 6px 18px #163c640b}
-.metric .label{font-size:13px;color:var(--muted)}.metric .value{font-size:27px;font-weight:bold;color:var(--navy);margin-top:8px}
-.status{padding:12px;border-radius:9px;background:#edf7ff;color:#14558b;margin-top:14px;font-size:14px;line-height:1.5}
-.table-wrap{overflow:auto;max-height:420px;border:1px solid #e1eaf4;border-radius:10px}
-table{border-collapse:collapse;width:100%;font-size:13px;white-space:nowrap}
-th{background:#dceeff;color:#103c6a;position:sticky;top:0}
-th,td{padding:10px 12px;border-bottom:1px solid #e5edf5;text-align:left}
-tr:nth-child(even) td{background:#f8fbff}
-footer{text-align:center;color:#6a829a;padding:10px 15px 25px;font-size:12px}
-@media(max-width:650px){.uploads,.cards{grid-template-columns:1fr}h1{font-size:25px}.panel{padding:15px}}
-</style>
-</head>
-<body>
-<header><div class="header-inner"><div class="logo">📊</div><div><h1>My MIS Data</h1><p>Your simple data dashboard</p></div></div></header>
-<main>
-<div class="notice"><strong>Important:</strong> This starter dashboard processes selected files in this browser only. Uploading a file here does not share it with other website visitors. Do not upload confidential customer or employee data to a public website.</div>
-<section class="panel">
-<h2>Upload your data</h2>
-<p class="sub">Select Excel (.xlsx, .xls) or CSV files, then click Generate Preview. This starter version shows a preview of each file; custom MIS calculations can be added once your columns and reports are confirmed.</p>
-<div class="uploads">
-<div class="upload-box"><label for="file1">Data File 1</label><input id="file1" type="file" accept=".xlsx,.xls,.csv"><div class="file-name" id="name1">No file selected</div></div>
-<div class="upload-box"><label for="file2">Data File 2 (optional)</label><input id="file2" type="file" accept=".xlsx,.xls,.csv"><div class="file-name" id="name2">No file selected</div></div>
+body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+main{max-width:1200px;margin:0 auto;padding:20px 16px 40px}
+h1{font-size:22px;margin:0 0 4px}.sub{color:var(--mu);margin:0 0 18px}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:16px;margin-bottom:16px}
+.up{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px}
+.up label{display:block;font-weight:600;margin-bottom:6px}
+input[type=file]{width:100%;padding:8px;border:1px dashed var(--bd);border-radius:8px;background:var(--bg);color:var(--tx)}
+button{background:var(--ac);color:var(--acx);border:0;border-radius:8px;padding:10px 18px;font:inherit;font-weight:600;cursor:pointer}
+button:disabled{opacity:.5;cursor:not-allowed}
+#msg{margin-top:10px;min-height:20px;font-size:14px}.ok{color:var(--ok)}.er{color:var(--er)}
+.bar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:10px}
+.bar input,.bar select{padding:8px 10px;border:1px solid var(--bd);border-radius:8px;background:var(--bg);color:var(--tx);font:inherit}
+.bar .n{margin-left:auto;color:var(--mu);font-size:14px}
+.wrap{overflow-x:auto;max-width:100%;border:1px solid var(--bd);border-radius:8px}
+table{border-collapse:collapse;width:100%;font-size:13px}
+th,td{padding:7px 10px;border-bottom:1px solid var(--bd);text-align:left;white-space:nowrap}
+th{background:var(--hd);position:sticky;top:0}
+td select{padding:4px;border:1px solid var(--bd);border-radius:6px;background:var(--bg);color:var(--tx)}
+.empty{padding:24px;text-align:center;color:var(--mu)}
+</style></head>
+<body><main>
+<h1>Sales to Onboarding</h1>
+<p class="sub">Roz dono files upload karein. Data isi browser mein save rehta hai, purana data remove nahi hota.</p>
+<div class="card">
+ <div class="up">
+  <div><label for="fa">1. Onboarding Agent file</label><input id="fa" type="file" accept=".xlsx,.xls,.csv"></div>
+  <div><label for="fp">2. Payment Paid file</label><input id="fp" type="file" accept=".xlsx,.xls,.csv"></div>
+ </div>
+ <div style="margin-top:14px"><button id="go">Upload and Distribute</button></div>
+ <div id="msg"></div>
 </div>
-<div class="actions"><button class="primary" id="generate">Generate Preview</button><button class="secondary" id="clear">Clear Files</button></div>
-<div id="status" class="status" role="status">Choose a file to begin.</div>
-</section>
-<div class="cards">
-<div class="metric"><div class="label">Files selected</div><div class="value" id="metricFiles">0</div></div>
-<div class="metric"><div class="label">Rows in previewed data</div><div class="value" id="metricRows">0</div></div>
-<div class="metric"><div class="label">Columns in first file</div><div class="value" id="metricCols">0</div></div>
+<div class="card">
+ <div class="bar">
+  <input id="q" type="search" placeholder="Search...">
+  <select id="dt"><option value="">All dates</option></select>
+  <button id="ex">Export Excel</button><button id="bs">Save Backup</button><button id="bl">Load Backup</button><input id="bf" type="file" accept=".json" hidden><span class="n" id="cnt"></span>
+ </div>
+ <div class="wrap"><table><thead id="th"></thead><tbody id="tb"></tbody></table></div>
 </div>
-<section class="panel"><h2>Data Preview</h2><p class="sub">The first 100 rows of the selected file will appear below.</p><div id="preview" class="table-wrap"><p style="padding:15px;color:#657b91">No data to display yet.</p></div></section>
 </main>
-<footer>My MIS Data · Free starter website</footer>
-<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <script>
-const file1=document.getElementById('file1'),file2=document.getElementById('file2');
-function setName(input,el){document.getElementById(el).textContent=input.files.length?input.files[0].name:'No file selected'}
-file1.addEventListener('change',()=>setName(file1,'name1'));
-file2.addEventListener('change',()=>setName(file2,'name2'));
-function readFile(file){
- return new Promise((resolve,reject)=>{
-  const reader=new FileReader();
-  reader.onload=e=>{
-   try{
-    if(!window.XLSX) throw new Error('Excel reader library could not load. Please connect to the internet and refresh this page.');
-    const data=new Uint8Array(e.target.result);
-    const workbook=XLSX.read(data,{type:'array',cellDates:true});
-    const sheet=workbook.Sheets[workbook.SheetNames[0]];
-    resolve(XLSX.utils.sheet_to_json(sheet,{header:1,defval:''}));
-   }catch(err){reject(err)}
-  };
-  reader.onerror=()=>reject(new Error('Could not read this file.'));
-  reader.readAsArrayBuffer(file);
- });
+const $=id=>document.getElementById(id);
+let db=null,chunks={};
+const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function msg(t,e){const m=$('msg');m.textContent=t;m.className=e?'er':'ok'}
+const pad=n=>String(n).padStart(2,'0');
+const MON={jan:1,feb:2,mar:3,apr:4,may:5,jun:6,jul:7,aug:8,sep:9,oct:10,nov:11,dec:12};
+function iso(v){if(isNaN(v))return'';const d=v.getFullYear()+'-'+pad(v.getMonth()+1)+'-'+pad(v.getDate());const t=pad(v.getHours())+':'+pad(v.getMinutes());return t==='00:00'?d:d+' '+t}
+function nd(v){v=String(v||'').trim();let m=v.match(/^(\d{4})[-\/.](\d{1,2})[-\/.](\d{1,2})/);if(m)return m[1]+'-'+pad(m[2])+'-'+pad(m[3]);
+ m=v.match(/^(\d{1,2})[-\/.](\d{1,2})[-\/.](\d{2,4})/);if(m)return(m[3].length===2?'20'+m[3]:m[3])+'-'+pad(m[2])+'-'+pad(m[1]);
+ m=v.match(/^(\d{1,2})[- ]([A-Za-z]{3})[a-z]*[- ,]+(\d{2,4})/);if(m&&MON[m[2].toLowerCase()])return(m[3].length===2?'20'+m[3]:m[3])+'-'+pad(MON[m[2].toLowerCase()])+'-'+pad(m[1]);return''}
+async function readSheet(f){
+ const wb=XLSX.read(await f.arrayBuffer(),{type:'array',cellDates:true});
+ const ws=wb.Sheets[wb.SheetNames[0]];Object.keys(ws).forEach(k=>{const c=ws[k];if(k[0]!=='!'&&c&&c.t==='d'&&c.v instanceof Date)c.w=iso(c.v)});const aoa=XLSX.utils.sheet_to_json(ws,{header:1,defval:'',raw:false});
+ const h=aoa.findIndex(r=>r.some(c=>String(c).trim()!==''));
+ if(h<0)return{heads:[],rows:[]};
+ const seen={};
+ const heads=aoa[h].map((x,i)=>{let k=String(x).trim()||'Column '+(i+1);if(seen[k]){seen[k]++;k+=' ('+seen[k]+')'}else seen[k]=1;return k});
+ const rows=aoa.slice(h+1).filter(r=>r.some(c=>String(c).trim()!=='')).map(r=>{const o={};heads.forEach((k,i)=>o[k]=String(r[i]??'').trim());return o});
+ return{heads,rows};
 }
-function esc(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
-document.getElementById('generate').addEventListener('click',async()=>{
- const files=[file1.files[0],file2.files[0]].filter(Boolean);
- const status=document.getElementById('status');
- if(!files.length){status.textContent='Please select at least one Excel or CSV file first.';return}
- status.textContent='Reading selected file(s)…';
+const find=(hs,...re)=>hs.find(h=>re.every(r=>r.test(h)));
+async function go(){
+ const fa=$('fa').files[0],fp=$('fp').files[0];
+ if(!fa||!fp){msg('Dono files select karein.',1);return}
+ $('go').disabled=true;msg('Processing...');
  try{
-  const parsed=[];
-  for(const file of files){const rows=await readFile(file);parsed.push({file,rows})}
-  const first=parsed[0].rows;
-  document.getElementById('metricFiles').textContent=files.length;
-  document.getElementById('metricRows').textContent=parsed.reduce((sum,x)=>sum+Math.max(0,x.rows.length-1),0).toLocaleString('en-IN');
-  document.getElementById('metricCols').textContent=(first[0]||[]).length;
-  if(!first.length){document.getElementById('preview').innerHTML='<p style="padding:15px">The selected file is empty.</p>';return}
-  let html='<table><thead><tr>'+first[0].map((v,i)=>'<th>'+esc(v||('Column '+(i+1)))+'</th>').join('')+'</tr></thead><tbody>';
-  first.slice(1,101).forEach(row=>{html+='<tr>';for(let i=0;i<first[0].length;i++)html+='<td>'+esc(row[i]??'')+'</td>';html+='</tr>'});
-  html+='</tbody></table>';
-  document.getElementById('preview').innerHTML=html;
-  status.textContent='Preview ready. File(s) were processed in this browser. This starter page does not save or publish uploaded data for other visitors.';
- }catch(err){status.textContent='Error: '+err.message}
+  const a=await readSheet(fa),p=await readSheet(fp);
+  const eC=find(a.heads,/emp/i,/id/i)||find(a.heads,/emp/i),lC=find(a.heads,/agent/i,/name/i)||find(a.heads,/name/i);
+  const dC=find(p.heads,/agent/i,/display/i)||find(p.heads,/display/i);
+  const tC=find(p.heads,/activation/i,/date/i)||find(p.heads,/activation/i)||find(p.heads,/(paid|payment|pay)/i,/date/i)||find(p.heads,/date/i);
+  if(!eC){msg('Onboarding file mein Emp ID column nahi mila.',1);return}
+  if(!lC){msg('Onboarding file mein Agent Name column nahi mila.',1);return}
+  if(!dC){msg('Payment file mein Agent Display Name column nahi mila.',1);return}
+  const agents=[],seen=new Set();
+  a.rows.forEach(r=>{const e=r[eC];if(e&&!seen.has(e)){seen.add(e);agents.push({e,l:r[lC]})}});
+  if(!agents.length){msg('Onboarding file mein koi Emp ID nahi mili.',1);return}
+  const isId=v=>v&&!/\s/.test(v)&&/\d/.test(v);
+  let i=0,skipped=0;const out=[];
+  const have=new Set();Object.values(chunks).forEach(c=>c.rows.forEach(x=>have.add(JSON.stringify([x.c,x.dt||'']))));let dup=0;
+  p.rows.forEach(r=>{if(!isId(r[dC])){skipped++;return}const dt=tC?nd(r[tC]):'',k=JSON.stringify([r,dt]);if(have.has(k)){dup++;return}have.add(k);const g=agents[i++%agents.length];out.push({e:g.e,l:g.l,d:'Not Done',c:r,dt})});
+  if(!out.length){msg(dup?dup+' rows pehle se saved hain, koi nayi row nahi mili.':'Koi bhi row distribute nahi hui (Agent Display Name mein ID nahi mili).',1);return}
+  const list=[];let cur=[],size=0;
+  out.forEach(o=>{const s=JSON.stringify(o).length;if(cur.length&&size+s>80000){list.push(cur);cur=[];size=0}cur.push(o);size+=s});
+  if(cur.length)list.push(cur);
+  const ts=Date.now(),date=new Date().toLocaleDateString('en-CA');
+  for(let k=0;k<list.length;k++)
+   {const id=ts+'-'+String(k).padStart(3,'0'),v={ts,k,date,heads:p.heads,rows:list[k]};await save(id,v);chunks[id]=v}
+  msg(out.length+' rows distribute hui, '+skipped+' rows skip (ID nahi thi)'+(dup?', '+dup+' rows pehle se saved thi (dobara add nahi hui)':'')+'. Data save ho gaya.'+(!tC?' Payment file mein date column nahi mila, upload date use hui.':out.some(o=>!o.dt)?' Kuch rows ki date samajh nahi aayi, unme upload date use hui.':' Date column: '+tC));
+  render();$('fa').value='';$('fp').value='';
+ }catch(e){msg('Error: '+(e.message||e.code||e),1)}
+ finally{$('go').disabled=false}
+}
+function render(){
+ const ids=Object.keys(chunks).sort();let heads=[],rows=[],dates=new Set();
+ ids.forEach(id=>{const c=chunks[id];(c.heads||[]).forEach(h=>{if(!heads.includes(h))heads.push(h)});c.rows.forEach((r,i)=>{dates.add(r.dt||c.date);rows.push({id,i,date:r.dt||c.date,r})})});
+ const sel=$('dt'),cv=sel.value;
+ sel.innerHTML='<option value="">All dates</option>'+[...dates].sort().reverse().map(d=>'<option'+(d===cv?' selected':'')+'>'+esc(d)+'</option>').join('');
+ const q=$('q').value.trim().toLowerCase(),dv=sel.value;
+ const f=rows.filter(x=>(!dv||x.date===dv)&&(!q||(x.r.e+' '+x.r.l+' '+Object.values(x.r.c).join(' ')).toLowerCase().includes(q)));
+ $('cnt').textContent=f.length+' rows';
+ $('th').innerHTML='<tr><th>Date</th><th>Emp. ID</th><th>Agent Name</th><th>Onboarding Done or Not</th>'+heads.map(h=>'<th>'+esc(h)+'</th>').join('')+'</tr>';
+ const shown=f.slice(0,3000);
+ $('tb').innerHTML=shown.length?shown.map(x=>'<tr><td>'+esc(x.date)+'</td><td>'+esc(x.r.e)+'</td><td>'+esc(x.r.l)+'</td><td><select data-c="'+x.id+'" data-i="'+x.i+'"><option'+(x.r.d==='Done'?' selected':'')+'>Done</option><option'+(x.r.d!=='Done'?' selected':'')+'>Not Done</option></select></td>'+heads.map(h=>'<td>'+esc(x.r.c[h])+'</td>').join('')+'</tr>').join(''):'<tr><td class="empty" colspan="'+(heads.length+4)+'">Abhi koi data nahi hai. Upar files upload karein.</td></tr>';
+}
+$('tb').addEventListener('change',async e=>{
+ const s=e.target.closest('select[data-c]');if(!s)return;
+ const c=chunks[s.dataset.c];c.rows[+s.dataset.i].d=s.value;
+ try{await save(s.dataset.c,c)}catch(x){msg('Status save nahi hua.',1)}
 });
-document.getElementById('clear').addEventListener('click',()=>{
- file1.value='';file2.value='';setName(file1,'name1');setName(file2,'name2');
- document.getElementById('metricFiles').textContent='0';document.getElementById('metricRows').textContent='0';document.getElementById('metricCols').textContent='0';
- document.getElementById('preview').innerHTML='<p style="padding:15px;color:#657b91">No data to display yet.</p>';
- document.getElementById('status').textContent='Files cleared. Choose a file to begin.';
-});
-</script>
-</body>
-</html>
+$('q').addEventListener('input',render);$('dt').addEventListener('change',render);$('go').addEventListener('click',go);
+render();
+let DB;
+function idb(){return new Promise((res,rej)=>{const r=indexedDB.open('s2o',1);r.onupgradeneeded=()=>r.result.createObjectStore('chunks');r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)})}
+async function save(id,v){const d=DB||(DB=await idb());return new Promise((res,rej)=>{const t=d.transaction('chunks','readwrite');t.objectStore('chunks').put(v,id);t.oncomplete=res;t.onerror=()=>rej(t.error)})}
+async function loadAll(){const d=DB||(DB=await idb());return new Promise((res,rej)=>{const t=d.transaction('chunks');const o=t.objectStore('chunks'),k=o.getAllKeys(),v=o.getAll();t.oncomplete=()=>{const r={};k.result.forEach((x,i)=>r[x]=v.result[i]);res(r)};t.onerror=()=>rej(t.error)})}
+$('ex').onclick=()=>{const rows=[];Object.keys(chunks).sort().forEach(id=>{const c=chunks[id];c.rows.forEach(r=>rows.push({'Date':r.dt||c.date,'Emp. ID':r.e,'Agent Name':r.l,'Onboarding Done or Not':r.d,...r.c}))});if(!rows.length){msg('Export ke liye data nahi hai.',1);return}const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(rows),'Data');XLSX.writeFile(wb,'sales-to-onboarding.xlsx')};
+$('bs').onclick=()=>{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(chunks)],{type:'application/json'}));a.download='sales-to-onboarding-backup.json';a.click()};
+$('bl').onclick=()=>$('bf').click();
+$('bf').onchange=async e=>{const f=e.target.files[0];if(!f)return;try{const o=JSON.parse(await f.text());for(const k of Object.keys(o)){await save(k,o[k]);chunks[k]=o[k]}render();msg('Backup load ho gaya (purana data safe hai).')}catch(x){msg('Backup file sahi nahi hai.',1)}e.target.value=''};
+loadAll().then(o=>{chunks=o;render()}).catch(e=>msg('Browser storage available nahi hai: '+e,1));
+</script></body></html>
