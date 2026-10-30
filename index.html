@@ -111,7 +111,7 @@ function render(){
  const q=$('q').value.trim().toLowerCase(),dv=sel.value;
  const f=rows.filter(x=>(!dv||x.date===dv)&&(!q||(x.r.e+' '+x.r.l+' '+Object.values(x.r.c).join(' ')).toLowerCase().includes(q)));
  $('cnt').textContent=f.length+' rows';
- $('th').innerHTML='<tr><th>Date</th><th>Emp. ID</th><th>Agent Name</th><th>Onboarding Done or Not</th>'+heads.map(h=>'<th>'+esc(h)+'</th>').join('')+'</tr>';
+ $('th').innerHTML='<tr><th>Date</th><th>Emp. ID</th><th>Onboarding Agent</th><th>Onboarding Done or Not</th>'+heads.map(h=>'<th>'+esc(h)+'</th>').join('')+'</tr>';
  const shown=f.slice(0,3000);
  $('tb').innerHTML=shown.length?shown.map(x=>'<tr><td>'+esc(x.date)+'</td><td>'+esc(x.r.e)+'</td><td>'+esc(x.r.l)+'</td><td><select data-c="'+x.id+'" data-i="'+x.i+'"><option'+(x.r.d==='Done'?' selected':'')+'>Done</option><option'+(x.r.d!=='Done'?' selected':'')+'>Not Done</option></select></td>'+heads.map(h=>'<td>'+esc(x.r.c[h])+'</td>').join('')+'</tr>').join(''):'<tr><td class="empty" colspan="'+(heads.length+4)+'">Abhi koi data nahi hai. Upar files upload karein.</td></tr>';
 }
@@ -126,7 +126,7 @@ let DB;
 function idb(){return new Promise((res,rej)=>{const r=indexedDB.open('s2o',1);r.onupgradeneeded=()=>r.result.createObjectStore('chunks');r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)})}
 async function save(id,v){const d=DB||(DB=await idb());return new Promise((res,rej)=>{const t=d.transaction('chunks','readwrite');t.objectStore('chunks').put(v,id);t.oncomplete=res;t.onerror=()=>rej(t.error)})}
 async function loadAll(){const d=DB||(DB=await idb());return new Promise((res,rej)=>{const t=d.transaction('chunks');const o=t.objectStore('chunks'),k=o.getAllKeys(),v=o.getAll();t.oncomplete=()=>{const r={};k.result.forEach((x,i)=>r[x]=v.result[i]);res(r)};t.onerror=()=>rej(t.error)})}
-$('ex').onclick=()=>{const rows=[];Object.keys(chunks).sort().forEach(id=>{const c=chunks[id];c.rows.forEach(r=>rows.push({'Date':r.dt||c.date,'Emp. ID':r.e,'Agent Name':r.l,'Onboarding Done or Not':r.d,...r.c}))});if(!rows.length){msg('Export ke liye data nahi hai.',1);return}const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(rows),'Data');XLSX.writeFile(wb,'sales-to-onboarding.xlsx')};
+$('ex').onclick=()=>{const rows=[];Object.keys(chunks).sort().forEach(id=>{const c=chunks[id];c.rows.forEach(r=>rows.push({'Date':r.dt||c.date,'Emp. ID':r.e,'Onboarding Agent':r.l,'Onboarding Done or Not':r.d,...r.c}))});if(!rows.length){msg('Export ke liye data nahi hai.',1);return}const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(rows),'Data');XLSX.writeFile(wb,'sales-to-onboarding.xlsx')};
 $('bs').onclick=()=>{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(chunks)],{type:'application/json'}));a.download='sales-to-onboarding-backup.json';a.click()};
 $('bl').onclick=()=>$('bf').click();
 $('bf').onchange=async e=>{const f=e.target.files[0];if(!f)return;try{const o=JSON.parse(await f.text());for(const k of Object.keys(o)){await save(k,o[k]);chunks[k]=o[k]}render();msg('Backup load ho gaya (purana data safe hai).')}catch(x){msg('Backup file sahi nahi hai.',1)}e.target.value=''};
